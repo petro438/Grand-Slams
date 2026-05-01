@@ -109,7 +109,7 @@
     <!-- LEADERBOARD -->
     <div class="pane active" id="pane-leaderboard">
       <div class="insight-grid" id="insightGrid"></div>
-      <div class="sec-hd">Player leaderboard <span class="note">click headers to sort</span><button class="dl-btn" onclick="downloadLB()">↓ CSV</button></div>
+      <div class="sec-hd">Player leaderboard <span class="note">click headers to sort · BL plate app. = lower bound (Statcast coverage may miss some)</span><button class="dl-btn" onclick="downloadLB()">↓ CSV</button></div>
       <div class="search-wrap"><input class="search-input" id="lbSearch" type="text" placeholder="Search player…" oninput="renderLeaderboard()"></div>
       <div class="tbl-wrap"><table>
         <thead><tr>
@@ -134,7 +134,6 @@
           <th class="c-rank">#</th>
           <th onclick="sortTeam('team')">Team</th>
           <th onclick="sortTeam('grandSlams')" class="on">Grand slams</th>
-          <th onclick="sortTeam('gsPerGame')">GS / game</th>
           <th onclick="sortTeam('blPA')">BL plate app.</th>
           <th onclick="sortTeam('blHRRate')">BL HR rate %</th>
           <th onclick="sortTeam('hrTotal')">Total HRs</th>
@@ -252,7 +251,7 @@ let charts={}, sortKey='grandSlams', sortAsc=false, teamSortKey='grandSlams', te
 function tLogo(a){const t=TEAMS[a];return t?`<img src="${t.logo}" class="c-logo" onerror="this.style.display='none'" alt="${a}">`:''}
 function tName(a){return TEAMS[a]?.name||a}
 function tColor(a){return TEAMS[a]?.color||'#b8b8b2'}
-function pct(n,d){return d>0?+(n/d*100).toFixed(1):0;}
+function pct(n,d){return d>0?Math.min(100,+(n/d*100).toFixed(1)):0;}
 
 // ── Load data on startup ───────────────────────────────────────────────
 async function loadData(){
@@ -464,7 +463,6 @@ function renderTeams(){
     <td class="c-rank">${i+1}</td>
     <td>${tLogo(t.team)}<span class="c-player" style="font-size:12px">${tName(t.team)}</span></td>
     <td><div class="c-wins" style="color:${t.grandSlams>=8?'var(--accent-dark)':t.grandSlams>=4?'var(--amber)':'var(--muted2)'}">${t.grandSlams}</div></td>
-    <td class="c-num">${t.gsPerGame}</td>
     <td class="c-num">${t.blPA}</td>
     <td class="c-num">${t.blHRRate}%</td>
     <td class="c-num">${t.hrTotal}</td>
