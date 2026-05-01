@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Slam Research — DraftKings Promo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{--bg:#f0efe9;--white:#fff;--border:#b8b8b2;--border-light:#ddddd8;--text:#111;--muted:#5a5a54;--muted2:#8a8a84;--accent:#00c358;--accent-dark:#007a38;--accent-bg:#e6f9ee;--amber:#7a4f00;--amber-bg:#fdf5e4;--dk:#1a73e8;--dk-bg:#e8f0fe;--ui:'IBM Plex Sans Condensed',sans-serif;--mono:'IBM Plex Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:12px;min-height:100vh;}
+  .header{background:var(--white);border-bottom:2px solid var(--text);padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .header-title{font-family:var(--ui);font-size:18px;font-weight:700;}.header-title em{color:var(--accent);font-style:normal;}
+  .header-sep{width:1px;height:28px;background:var(--border);flex-shrink:0;}
+  .header-sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;line-height:1.5;}
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .header-promo{background:var(--dk);color:#fff;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 10px;}
+  .an-logo{height:18px;opacity:.85;}
+  .ctrl-bar{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .ctrl-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+  select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 8px;outline:none;}
+  select:focus{border-color:var(--accent);}
+  input[type=number]{width:80px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;}
+  input:focus{border-color:var(--accent);}
+  .status-pill{font-size:9px;color:var(--muted2);font-family:var(--mono);}
+  .main{padding:14px 20px;overflow-x:hidden;}
+  .loading{text-align:center;padding:80px 20px;color:var(--muted);font-size:13px;line-height:2;}
+  .loading-bar{height:2px;background:var(--border-light);margin:12px auto;max-width:200px;}
+  .loading-fill{height:100%;background:var(--accent);width:0%;transition:width .4s;}
+  .tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:14px;overflow-x:auto;white-space:nowrap;}
+  .tab{font-family:var(--ui);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:6px 14px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;flex-shrink:0;}
+  .tab.active{color:var(--text);border-bottom-color:var(--text);}.tab:hover:not(.active){background:var(--border-light);color:var(--text);}
+  .pane{display:none;}.pane.active{display:block;}
+  .sec-hd{font-family:var(--ui);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px;display:flex;align-items:center;}
+  .sec-hd .note{font-family:var(--mono);font-size:9px;color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0;margin-left:auto;}
+  .dl-btn{margin-left:10px;font-family:var(--ui);font-size:9px;font-weight:700;padding:2px 7px;background:var(--bg);border:1px solid var(--border);color:var(--muted);cursor:pointer;text-transform:uppercase;}.dl-btn:hover{background:var(--border-light);}
+  .tbl-wrap{border:1px solid var(--border);background:var(--white);overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  thead tr{background:var(--bg);}
+  thead th{font-family:var(--ui);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:6px 9px;text-align:left;border-bottom:2px solid var(--border);border-right:1px solid var(--border-light);cursor:pointer;user-select:none;white-space:nowrap;}
+  thead th:last-child{border-right:none;}thead th:hover{background:var(--border-light);color:var(--text);}
+  thead th.on{color:var(--accent-dark);background:var(--accent-bg);border-bottom-color:var(--accent);}
+  thead th.on::after{content:' ↓';}thead th.on.asc::after{content:' ↑';}
+  tbody td{padding:6px 9px;border-bottom:1px solid var(--border-light);border-right:1px solid var(--border-light);vertical-align:middle;}
+  tbody td:last-child{border-right:none;}tbody tr:hover td{background:#f8f8f5;}tbody tr:last-child td{border-bottom:none;}
+  .c-rank{font-size:10px;color:var(--muted2);width:28px;}.c-player{font-family:var(--ui);font-weight:600;font-size:13px;}
+  .c-logo{width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px;}
+  .c-num{font-variant-numeric:tabular-nums;color:var(--muted);}.c-wins{font-family:var(--ui);font-size:17px;font-weight:700;}
+  .bar-wrap{margin-top:3px;height:3px;max-width:70px;background:var(--border-light);}.bar-fill{height:100%;}
+  .chart-card{background:var(--white);border:1px solid var(--border);padding:12px 14px;margin-bottom:10px;}
+  .chart-label{font-family:var(--ui);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);border-bottom:1px solid var(--border-light);padding-bottom:5px;margin-bottom:10px;}
+  .insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+  .insight-card{background:var(--white);border:1px solid var(--border);padding:10px 12px;}
+  .insight-val{font-family:var(--ui);font-size:26px;font-weight:700;line-height:1;}
+  .insight-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2);margin-top:3px;}
+  .insight-sub{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.5;}
+  .search-wrap{margin-bottom:8px;}
+  .search-input{width:100%;background:var(--white);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 9px;outline:none;}.search-input:focus{border-color:var(--accent);}
+  @media(max-width:640px){
+    .header{padding:8px 12px;gap:8px;}.header-title{font-size:15px;}.header-sep,.header-sub{display:none;}
+    .ctrl-bar{padding:7px 12px;}.main{padding:10px 12px;}
+    .insight-grid{grid-template-columns:1fr 1fr;}
+    .tabs{font-size:10px;}.tab{padding:5px 10px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="https://cdn.vox-cdn.com/uploads/chorus_asset/file/23240520/Action_Network_Logo.png" class="an-logo" onerror="this.style.display='none'" alt="AN">
+  <div class="header-title">Grand <em>Slam</em> Research</div>
+  <div class="header-sep"></div>
+  <div class="header-sub">DraftKings promo · Grand Slam pool<br>Baseball Savant · Statcast</div>
+  <div class="header-right">
+    <div class="header-promo">DK Grand Slam Pool</div>
+  </div>
+</div>
+
+<div class="ctrl-bar">
+  <span class="ctrl-lbl">Season</span>
+  <select id="seasonSel" onchange="applyFilter()">
+    <option value="all">2024 + 2025 + 2026</option>
+    <option value="2026">2026</option>
+    <option value="2025">2025</option>
+    <option value="2024">2024</option>
+  </select>
+  <span class="ctrl-lbl">Min BL plate app.</span>
+  <input type="number" id="minBLPA" value="5" min="1" max="100" onchange="applyFilter()">
+  <span class="status-pill" id="statusPill"></span>
+</div>
+
+<div class="main">
+  <div class="loading" id="loadingState">
+    <div>Loading grand slam data…</div>
+    <div class="loading-bar"><div class="loading-fill" id="loadFill"></div></div>
+    <div style="font-size:11px;color:var(--muted2)" id="loadMsg">Fetching combined dataset…</div>
+  </div>
+
+  <div id="resultsArea" style="display:none">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('leaderboard')">Player Leaderboard</div>
+      <div class="tab" onclick="switchTab('teams')">Team Context</div>
+      <div class="tab" onclick="switchTab('frequency')">Frequency</div>
+      <div class="tab" onclick="switchTab('inning')">By Inning</div>
+      <div class="tab" onclick="switchTab('daylog')">Day Log</div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="pane active" id="pane-leaderboard">
+      <div class="insight-grid" id="insightGrid"></div>
+      <div class="sec-hd">Player leaderboard <span class="note">click headers to sort</span><button class="dl-btn" onclick="downloadLB()">↓ CSV</button></div>
+      <div class="search-wrap"><input class="search-input" id="lbSearch" type="text" placeholder="Search player…" oninput="renderLeaderboard()"></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr>
+          <th class="c-rank">#</th>
+          <th onclick="sortLb('name')">Player</th>
+          <th onclick="sortLb('team')">Team</th>
+          <th onclick="sortLb('grandSlams')" class="on">Grand slams</th>
+          <th onclick="sortLb('blPA')">BL plate app.</th>
+          <th onclick="sortLb('gsPerBLPA')">GS / BL PA %</th>
+          <th onclick="sortLb('blHRRate')">BL HR rate %</th>
+          <th onclick="sortLb('hrTotal')">Total HRs</th>
+        </tr></thead>
+        <tbody id="lbBody"></tbody>
+      </table></div>
+    </div>
+
+    <!-- TEAMS -->
+    <div class="pane" id="pane-teams">
+      <div class="sec-hd">Team grand slam production <span class="note">which teams load the bases most dangerously</span><button class="dl-btn" onclick="downloadTeams()">↓ CSV</button></div>
+      <div class="tbl-wrap" style="margin-bottom:12px"><table>
+        <thead><tr>
+          <th class="c-rank">#</th>
+          <th onclick="sortTeam('team')">Team</th>
+          <th onclick="sortTeam('grandSlams')" class="on">Grand slams</th>
+          <th onclick="sortTeam('gsPerGame')">GS / game</th>
+          <th onclick="sortTeam('blPA')">BL plate app.</th>
+          <th onclick="sortTeam('blHRRate')">BL HR rate %</th>
+          <th onclick="sortTeam('hrTotal')">Total HRs</th>
+          <th onclick="sortTeam('games')">Games</th>
+        </tr></thead>
+        <tbody id="teamBody"></tbody>
+      </table></div>
+      <div class="chart-card">
+        <div class="chart-label">Grand slams by team</div>
+        <div style="position:relative;height:280px"><canvas id="chartTeams"></canvas></div>
+      </div>
+    </div>
+
+    <!-- FREQUENCY -->
+    <div class="pane" id="pane-frequency">
+      <div class="insight-grid" id="freqGrid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="chart-card">
+          <div class="chart-label">Grand slams per day — does the pool pay out?</div>
+          <div style="position:relative;height:220px"><canvas id="chartPerDay"></canvas></div>
+          <div style="font-size:9px;color:var(--muted2);margin-top:6px">Gray = no payout. Days with 2+ GS split the pool more ways.</div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-label">Grand slams by month</div>
+          <div style="position:relative;height:220px"><canvas id="chartByMonth"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">Grand slam distance distribution</div>
+        <div style="position:relative;height:200px"><canvas id="chartDist"></canvas></div>
+        <div style="font-size:9px;color:var(--muted2);margin-top:6px">Distance doesn't matter for this promo — any GS wins a share. But useful for understanding the play.</div>
+      </div>
+    </div>
+
+    <!-- INNING -->
+    <div class="pane" id="pane-inning">
+      <div class="chart-card">
+        <div class="chart-label">Grand slams by inning</div>
+        <div style="position:relative;height:260px"><canvas id="chartByInning"></canvas></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="chart-card">
+          <div class="chart-label">Top vs bottom of inning</div>
+          <div style="position:relative;height:200px"><canvas id="chartTopBot"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-label">Outs when grand slam hit</div>
+          <div style="position:relative;height:200px"><canvas id="chartOuts"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY LOG -->
+    <div class="pane" id="pane-daylog">
+      <div class="sec-hd">Daily grand slam log <span class="note">green = ≥1 GS</span><button class="dl-btn" onclick="downloadDayLog()">↓ CSV</button></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr>
+          <th>Date</th><th>Season</th><th>GS count</th><th>Player(s)</th><th>Team(s)</th><th>Inning(s)</th><th>Distance(s)</th><th>Total HRs</th>
+        </tr></thead>
+        <tbody id="dayBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TEAMS={
+  ARI:{name:"Arizona Diamondbacks",  logo:"https://assets.actionnetwork.com/976480_dbacks.png",color:"#A71930"},
+  ATL:{name:"Atlanta Braves",         logo:"https://static.sprtactn.co/teamlogos/mlb/100/atl.png",color:"#CE1141"},
+  BAL:{name:"Baltimore Orioles",      logo:"https://static.sprtactn.co/teamlogos/mlb/100/bal.png",color:"#DF4601"},
+  BOS:{name:"Boston Red Sox",         logo:"https://static.sprtactn.co/teamlogos/mlb/100/bos.png",color:"#BD3039"},
+  CHC:{name:"Chicago Cubs",           logo:"https://static.sprtactn.co/teamlogos/mlb/100/chc.png",color:"#0E3386"},
+  CWS:{name:"Chicago White Sox",      logo:"https://static.sprtactn.co/teamlogos/mlb/100/cws.png",color:"#000000"},
+  CIN:{name:"Cincinnati Reds",        logo:"https://static.sprtactn.co/teamlogos/mlb/100/cin.png",color:"#C6011F"},
+  CLE:{name:"Cleveland Guardians",    logo:"https://assets.actionnetwork.com/91388_guardians20241.png",color:"#E31937"},
+  COL:{name:"Colorado Rockies",       logo:"https://static.sprtactn.co/teamlogos/mlb/100/col.png",color:"#33006F"},
+  DET:{name:"Detroit Tigers",         logo:"https://assets.actionnetwork.com/461059_det_n.png",color:"#0C2C56"},
+  HOU:{name:"Houston Astros",         logo:"https://static.sprtactn.co/teamlogos/mlb/100/hou.png",color:"#002D62"},
+  KC: {name:"Kansas City Royals",     logo:"https://static.sprtactn.co/teamlogos/mlb/100/kc.png",color:"#004687"},
+  LAA:{name:"Los Angeles Angels",     logo:"https://static.sprtactn.co/teamlogos/mlb/100/laa.png",color:"#BA0021"},
+  LAD:{name:"Los Angeles Dodgers",    logo:"https://static.sprtactn.co/teamlogos/mlb/100/lad.png",color:"#005A9C"},
+  MIA:{name:"Miami Marlins",          logo:"https://static.sprtactn.co/teamlogos/mlb/100/mia_n.png",color:"#FF6600"},
+  MIL:{name:"Milwaukee Brewers",      logo:"https://static.sprtactn.co/teamlogos/mlb/100/mil.png",color:"#B6922E"},
+  MIN:{name:"Minnesota Twins",        logo:"https://static.sprtactn.co/teamlogos/mlb/100/min.png",color:"#002B5C"},
+  NYM:{name:"New York Mets",          logo:"https://static.sprtactn.co/teamlogos/mlb/100/nym.png",color:"#002D72"},
+  NYY:{name:"New York Yankees",       logo:"https://static.sprtactn.co/teamlogos/mlb/100/nyy.png",color:"#003087"},
+  ATH:{name:"Athletics",              logo:"https://static.sprtactn.co/teamlogos/mlb/100/oak.png",color:"#003831"},
+  OAK:{name:"Athletics",              logo:"https://static.sprtactn.co/teamlogos/mlb/100/oak.png",color:"#003831"},
+  PHI:{name:"Philadelphia Phillies",  logo:"https://static.sprtactn.co/teamlogos/mlb/100/phi.png",color:"#E81828"},
+  PIT:{name:"Pittsburgh Pirates",     logo:"https://static.sprtactn.co/teamlogos/mlb/100/pit.png",color:"#FDB827"},
+  SD: {name:"San Diego Padres",       logo:"https://static.sprtactn.co/teamlogos/mlb/100/sd.png",color:"#2F241D"},
+  SEA:{name:"Seattle Mariners",       logo:"https://static.sprtactn.co/teamlogos/mlb/100/sea.png",color:"#0C2C56"},
+  SF: {name:"San Francisco Giants",   logo:"https://static.sprtactn.co/teamlogos/mlb/100/sf.png",color:"#FD5A1E"},
+  STL:{name:"St. Louis Cardinals",    logo:"https://static.sprtactn.co/teamlogos/mlb/100/stl.png",color:"#C41E3A"},
+  TB: {name:"Tampa Bay Rays",         logo:"https://static.sprtactn.co/teamlogos/mlb/100/tb.png",color:"#092C5C"},
+  TEX:{name:"Texas Rangers",          logo:"https://static.sprtactn.co/teamlogos/mlb/100/tex.png",color:"#003278"},
+  TOR:{name:"Toronto Blue Jays",      logo:"https://static.sprtactn.co/teamlogos/mlb/100/tor.png",color:"#134A8E"},
+  WSH:{name:"Washington Nationals",   logo:"https://static.sprtactn.co/teamlogos/mlb/100/wsh.png",color:"#AB0003"},
+};
+
+// Determine base URL for JSON files (same repo on GitHub Pages, or localhost)
+const BASE = (() => {
+  const loc = window.location.href;
+  return loc.substring(0, loc.lastIndexOf('/') + 1);
+})();
+
+// Raw full dataset — all seasons combined
+let fullData = null;
+// Filtered view — what's currently displayed
+let viewData = { players:[], teams:{}, days:{}, gsEvents:[] };
+
+let charts={}, sortKey='grandSlams', sortAsc=false, teamSortKey='grandSlams', teamSortAsc=false;
+
+function tLogo(a){const t=TEAMS[a];return t?`<img src="${t.logo}" class="c-logo" onerror="this.style.display='none'" alt="${a}">`:''}
+function tName(a){return TEAMS[a]?.name||a}
+function tColor(a){return TEAMS[a]?.color||'#b8b8b2'}
+function pct(n,d){return d>0?+(n/d*100).toFixed(1):0;}
+
+// ── Load data on startup ───────────────────────────────────────────────
+async function loadData(){
+  const fill = document.getElementById('loadFill');
+  const msg = document.getElementById('loadMsg');
+
+  // Try combined first, fall back to individual seasons
+  const sources = [
+    { url: BASE+'gs-data-combined.json', label:'combined dataset' },
+    { url: 'gs-data-combined.json', label:'combined dataset' },
+  ];
+
+  for(const src of sources){
+    try{
+      msg.textContent = `Fetching ${src.label}…`;
+      fill.style.width = '30%';
+      const r = await fetch(src.url);
+      if(!r.ok) continue;
+      fill.style.width = '70%';
+      msg.textContent = 'Parsing…';
+      const d = await r.json();
+      fill.style.width = '100%';
+      fullData = d;
+      applyFilter();
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('resultsArea').style.display = 'block';
+      return;
+    } catch(e){ continue; }
+  }
+
+  // Failed
+  document.getElementById('loadMsg').textContent = 'Could not load data. Make sure gs-data-combined.json is in the same folder.';
+  fill.style.width = '0%';
+}
+
+// ── Filter by season ───────────────────────────────────────────────────
+function applyFilter(){
+  if(!fullData) return;
+  const season = document.getElementById('seasonSel').value;
+  const minBLPA = parseInt(document.getElementById('minBLPA').value)||5;
+
+  // Filter days by season
+  const filteredDays = {};
+  const gsEvents = [];
+  for(const [date, day] of Object.entries(fullData.days)){
+    const yr = date.slice(0,4);
+    if(season !== 'all' && yr !== season) continue;
+    filteredDays[date] = day;
+    for(const gs of day.grandSlams||[]){
+      gsEvents.push({...gs, date, season: yr});
+    }
+  }
+
+  // Re-aggregate players and teams from filtered days + original player BL PA data
+  // For BL PA we need to filter from per-player season breakdown if available,
+  // otherwise use the full player data (only correct for "all" filter)
+  const players = {};
+  const teams = {};
+
+  // Build player GS counts from filtered days
+  for(const day of Object.values(filteredDays)){
+    for(const gs of day.grandSlams||[]){
+      const pid = gs.pid||gs.player;
+      if(!players[pid]) players[pid] = {pid, name:gs.player, team:gs.team, grandSlams:0, blHR:0, hrTotal:0, blPA:0};
+      players[pid].grandSlams++;
+    }
+  }
+
+  // Overlay full player stats — use original player data, adjusted for season filter
+  for(const p of fullData.players){
+    const pid = p.pid||p.name;
+    if(!players[pid]) players[pid] = {pid, name:p.name, team:p.team, grandSlams:0, blHR:0, hrTotal:0, blPA:0};
+    // For "all seasons" use the combined totals directly
+    // For single season, we use what we rebuilt from days for GS, and scale BL PA proportionally
+    if(season === 'all'){
+      players[pid].blPA = p.blPA||0;
+      players[pid].blHR = p.blHR||0;
+      players[pid].hrTotal = p.hrTotal||0;
+      players[pid].team = p.team||players[pid].team;
+    } else {
+      // Single season: scale BL PA by GS ratio as a proxy
+      // (exact per-season BL PA would need per-season player records)
+      const gsRatio = (p.grandSlams||0) > 0 ? players[pid].grandSlams / p.grandSlams : 0;
+      players[pid].blPA = Math.round((p.blPA||0) * gsRatio);
+      players[pid].blHR = Math.round((p.blHR||0) * gsRatio);
+      players[pid].hrTotal = Math.round((p.hrTotal||0) * gsRatio);
+      players[pid].team = p.team||players[pid].team;
+    }
+  }
+
+  // Teams from filtered days
+  const teamGames = {};
+  for(const [date, day] of Object.entries(filteredDays)){
+    for(const gs of day.grandSlams||[]){
+      const t = gs.team||'?';
+      if(!teams[t]) teams[t] = {team:t, grandSlams:0, blPA:0, blHR:0, hrTotal:0, games:new Set()};
+      teams[t].grandSlams++;
+      teams[t].games.add(date+'_'+t);
+    }
+    day.allHRs; // just referencing
+  }
+  // Fill in team BL PA from original data (scaled if single season)
+  for(const t of fullData.teams||[]){
+    const tm = t.team||'?';
+    if(!teams[tm]) teams[tm] = {team:tm, grandSlams:0, blPA:0, blHR:0, hrTotal:0, games:new Set()};
+    if(season === 'all'){
+      teams[tm].blPA = t.blPA||0;
+      teams[tm].blHR = t.blHR||0;
+      teams[tm].hrTotal = t.hrTotal||0;
+      if(!teams[tm].games.size) for(let i=0;i<(t.games||0);i++) teams[tm].games.add(`game_${i}`);
+    } else {
+      const gsRatio = (t.grandSlams||0) > 0 ? (teams[tm].grandSlams||0) / t.grandSlams : 0;
+      teams[tm].blPA = Math.round((t.blPA||0)*gsRatio);
+      teams[tm].blHR = Math.round((t.blHR||0)*gsRatio);
+      teams[tm].hrTotal = Math.round((t.hrTotal||0)*gsRatio);
+    }
+  }
+  // Finalize team games
+  for(const t of Object.values(teams)) t.games = t.games instanceof Set ? t.games.size : t.games;
+
+  viewData = {
+    players: Object.values(players).filter(p=>p.blPA>=minBLPA||p.grandSlams>0),
+    teams,
+    days: filteredDays,
+    gsEvents,
+  };
+
+  const totalGS = gsEvents.length;
+  const totalDays = Object.keys(filteredDays).length;
+  const gsDays = Object.values(filteredDays).filter(d=>d.grandSlams?.length>0).length;
+  const label = season==='all'?'2024–2026':season;
+  document.getElementById('statusPill').textContent =
+    `${label} · ${totalDays} days · ${totalGS} grand slams · ${Math.round(gsDays/Math.max(totalDays,1)*100)}% payout rate`;
+
+  renderLeaderboard();
+  renderDayLog();
+  // Re-render whichever tab is active
+  const activeTab = document.querySelector('.tab.active')?.textContent?.toLowerCase();
+  if(activeTab?.includes('team')) renderTeams();
+  if(activeTab?.includes('freq')) renderFrequency();
+  if(activeTab?.includes('inn')) renderInning();
+}
+
+// ── Getters ────────────────────────────────────────────────────────────
+function getPlayers(){
+  const min = parseInt(document.getElementById('minBLPA').value)||5;
+  return viewData.players
+    .filter(p=>(p.blPA>=min||p.grandSlams>0))
+    .map(p=>({...p, gsPerBLPA:pct(p.grandSlams,p.blPA), blHRRate:pct(p.blHR,p.blPA)}))
+    .sort((a,b)=>{
+      const av=a[sortKey]??0, bv=b[sortKey]??0;
+      if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+      return sortAsc?av-bv:bv-av;
+    });
+}
+
+function getTeams(){
+  return Object.values(viewData.teams)
+    .map(t=>({...t, gsPerGame:t.games>0?+(t.grandSlams/t.games).toFixed(3):0, blHRRate:pct(t.blHR,t.blPA)}))
+    .sort((a,b)=>{
+      const av=a[teamSortKey]??0, bv=b[teamSortKey]??0;
+      if(typeof av==='string') return teamSortAsc?av.localeCompare(bv):bv.localeCompare(av);
+      return teamSortAsc?av-bv:bv-av;
+    });
+}
+
+// ── Render leaderboard ─────────────────────────────────────────────────
+function renderLeaderboard(){
+  const players = getPlayers();
+  const q = (document.getElementById('lbSearch')?.value||'').toLowerCase();
+  const filtered = q ? players.filter(p=>p.name.toLowerCase().includes(q)) : players;
+  const days = Object.values(viewData.days);
+  const totalGS = viewData.gsEvents.length;
+  const gsDays = days.filter(d=>d.grandSlams?.length>0).length;
+  const top = players[0];
+
+  document.getElementById('insightGrid').innerHTML=`
+    <div class="insight-card"><div class="insight-val">${totalGS}</div><div class="insight-lbl">Total grand slams</div><div class="insight-sub">${days.length} days · ${+(totalGS/Math.max(days.length,1)).toFixed(2)} per day avg</div></div>
+    <div class="insight-card"><div class="insight-val" style="color:var(--accent-dark)">${Math.round(gsDays/Math.max(days.length,1)*100)}%</div><div class="insight-lbl">Days pool pays out</div><div class="insight-sub">${gsDays} of ${days.length} days had ≥1 grand slam</div></div>
+    <div class="insight-card"><div class="insight-val" style="color:var(--amber)">${top?top.grandSlams:'—'}</div><div class="insight-lbl">Leader — ${top?top.name.split(',')[0]:'—'}</div><div class="insight-sub">${top?`${top.gsPerBLPA}% GS/BL PA · ${top.blPA} BL plate app.`:''}</div></div>`;
+
+  const maxGS = Math.max(...filtered.map(p=>p.grandSlams),1);
+  document.getElementById('lbBody').innerHTML = filtered.map((p,i)=>{
+    const bc = p.grandSlams>=3?'var(--accent-dark)':p.grandSlams>=1?'var(--amber)':'var(--border)';
+    return `<tr>
+      <td class="c-rank">${i+1}</td>
+      <td><span class="c-player">${p.name}</span></td>
+      <td>${tLogo(p.team)}<span style="font-size:10px;color:var(--muted2)">${p.team}</span></td>
+      <td><div class="c-wins" style="color:${p.grandSlams>=3?'var(--accent-dark)':p.grandSlams>=1?'var(--amber)':'var(--muted2)'}">${p.grandSlams}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(p.grandSlams/maxGS*100)}%;background:${bc}"></div></div></td>
+      <td class="c-num">${p.blPA}</td>
+      <td class="c-num">${p.gsPerBLPA}%</td>
+      <td class="c-num">${p.blHRRate}%</td>
+      <td class="c-num">${p.hrTotal}</td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="8" style="text-align:center;color:var(--muted2);padding:20px">No players match the filter.</td></tr>`;
+}
+
+// ── Render teams ───────────────────────────────────────────────────────
+function renderTeams(){
+  charts.teams?.destroy(); delete charts.teams;
+  const teams = getTeams();
+  const mfSm={family:'IBM Plex Mono',size:9};
+  const tt={backgroundColor:'#fff',borderColor:'#b8b8b2',borderWidth:1,titleColor:'#111',bodyColor:'#5a5a54',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:mfSm};
+  document.getElementById('teamBody').innerHTML = teams.map((t,i)=>`<tr>
+    <td class="c-rank">${i+1}</td>
+    <td>${tLogo(t.team)}<span class="c-player" style="font-size:12px">${tName(t.team)}</span></td>
+    <td><div class="c-wins" style="color:${t.grandSlams>=8?'var(--accent-dark)':t.grandSlams>=4?'var(--amber)':'var(--muted2)'}">${t.grandSlams}</div></td>
+    <td class="c-num">${t.gsPerGame}</td>
+    <td class="c-num">${t.blPA}</td>
+    <td class="c-num">${t.blHRRate}%</td>
+    <td class="c-num">${t.hrTotal}</td>
+    <td class="c-num">${t.games}</td>
+  </tr>`).join('');
+  const sorted = [...teams].sort((a,b)=>b.grandSlams-a.grandSlams);
+  charts.teams = new Chart(document.getElementById('chartTeams'),{
+    type:'bar',
+    data:{labels:sorted.map(t=>t.team),datasets:[{data:sorted.map(t=>t.grandSlams),backgroundColor:sorted.map(t=>tColor(t.team)),borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{...tt,callbacks:{title:items=>tName(sorted[items[0].dataIndex].team),label:ctx=>`${ctx.parsed.y} grand slams`}}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm,maxRotation:45},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'}}}}
+  });
+}
+
+// ── Render frequency ───────────────────────────────────────────────────
+function renderFrequency(){
+  ['perDay','byMonth','dist'].forEach(k=>{charts[k]?.destroy();delete charts[k];});
+  const days = Object.values(viewData.days);
+  const mfSm={family:'IBM Plex Mono',size:9};
+  const tt={backgroundColor:'#fff',borderColor:'#b8b8b2',borderWidth:1,titleColor:'#111',bodyColor:'#5a5a54',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:mfSm};
+
+  // Per day distribution
+  const counts={};
+  days.forEach(d=>{const n=d.grandSlams?.length||0;counts[n]=(counts[n]||0)+1;});
+  const maxN=Math.max(...Object.keys(counts).map(Number),3);
+  charts.perDay=new Chart(document.getElementById('chartPerDay'),{
+    type:'bar',
+    data:{labels:Array.from({length:maxN+1},(_,i)=>i===0?'0 — no payout':`${i}`),
+          datasets:[{data:Array.from({length:maxN+1},(_,i)=>counts[i]||0),backgroundColor:Array.from({length:maxN+1},(_,i)=>i===0?'#ddddd8':'#00c358'),borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`${ctx.parsed.y} days`}}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'},title:{display:true,text:'Days',color:'#5a5a54',font:mfSm}}}}
+  });
+
+  // By month
+  const byMonth={};
+  Object.entries(viewData.days).forEach(([date,d])=>{const m=date.slice(0,7);if(!byMonth[m])byMonth[m]={gs:0,days:0};byMonth[m].gs+=(d.grandSlams?.length||0);byMonth[m].days++;});
+  const months=Object.keys(byMonth).sort();
+  const MN={'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'};
+  charts.byMonth=new Chart(document.getElementById('chartByMonth'),{
+    type:'bar',
+    data:{labels:months.map(m=>(m.slice(0,4).slice(2))+' '+MN[m.slice(5)]),
+          datasets:[{label:'Grand slams',data:months.map(m=>byMonth[m].gs),backgroundColor:'#00c358',borderRadius:0},{label:'Playing days',data:months.map(m=>byMonth[m].days),backgroundColor:'#ddddd8',borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#5a5a54',font:mfSm,boxWidth:9}},tooltip:{...tt}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm,maxRotation:45},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'}}}}
+  });
+
+  // Distance distribution
+  const distBins=[340,360,380,400,420,440,460,480];
+  const distLabels=['<360','360-379','380-399','400-419','420-439','440-459','460-479','480+'];
+  const distCounts=new Array(distLabels.length).fill(0);
+  viewData.gsEvents.forEach(ev=>{if(!ev.dist)return;for(let i=0;i<distBins.length;i++){if(ev.dist<distBins[i]){distCounts[i]++;return;}}distCounts[distLabels.length-1]++;});
+  charts.dist=new Chart(document.getElementById('chartDist'),{
+    type:'bar',
+    data:{labels:distLabels,datasets:[{data:distCounts,backgroundColor:'#00c358',borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`${ctx.parsed.y} grand slams`}}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'}}}}
+  });
+
+  // Insight cards
+  const totalGS=viewData.gsEvents.length;
+  const zeroDays=days.filter(d=>!d.grandSlams?.length).length;
+  const multiDays=days.filter(d=>(d.grandSlams?.length||0)>=2).length;
+  document.getElementById('freqGrid').innerHTML=`
+    <div class="insight-card"><div class="insight-val">${+(totalGS/Math.max(days.length,1)).toFixed(2)}</div><div class="insight-lbl">GS per day avg</div><div class="insight-sub">On 15-game slate: ~${+(totalGS/Math.max(days.length,1)).toFixed(1)} expected</div></div>
+    <div class="insight-card"><div class="insight-val" style="color:var(--amber)">${Math.round(zeroDays/Math.max(days.length,1)*100)}%</div><div class="insight-lbl">No-payout days</div><div class="insight-sub">${zeroDays} of ${days.length} days — pool rolls over</div></div>
+    <div class="insight-card"><div class="insight-val" style="color:var(--accent-dark)">${multiDays}</div><div class="insight-lbl">Multi-GS days</div><div class="insight-sub">${Math.round(multiDays/Math.max(days.length,1)*100)}% of days — split more ways</div></div>`;
+}
+
+// ── Render inning ──────────────────────────────────────────────────────
+function renderInning(){
+  ['byInning','topBot','byOuts'].forEach(k=>{charts[k]?.destroy();delete charts[k];});
+  const mfSm={family:'IBM Plex Mono',size:9};
+  const tt={backgroundColor:'#fff',borderColor:'#b8b8b2',borderWidth:1,titleColor:'#111',bodyColor:'#5a5a54',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:mfSm};
+  const inningCounts=new Array(12).fill(0);
+  let top=0,bot=0;
+  const outsCounts=[0,0,0];
+  viewData.gsEvents.forEach(ev=>{
+    inningCounts[Math.min((ev.inning||1)-1,11)]++;
+    if(ev.topbot==='Top')top++;else if(ev.topbot==='Bot')bot++;
+    const o=ev.outs||0;if(o>=0&&o<=2)outsCounts[o]++;
+  });
+  charts.byInning=new Chart(document.getElementById('chartByInning'),{
+    type:'bar',
+    data:{labels:['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th+'],
+          datasets:[{data:inningCounts,backgroundColor:inningCounts.map((_,i)=>i<3?'#b8deca':i<6?'#7de0a8':'#00c358'),borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`${ctx.parsed.y} grand slams`}}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'},title:{display:true,text:'Grand slams',color:'#5a5a54',font:mfSm}}}}
+  });
+  charts.topBot=new Chart(document.getElementById('chartTopBot'),{
+    type:'bar',
+    data:{labels:['Top (visiting team)','Bottom (home team)'],datasets:[{data:[top,bot],backgroundColor:['#b8b8b2','#00c358'],borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`${ctx.parsed.y} grand slams`}}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'}}}}
+  });
+  charts.byOuts=new Chart(document.getElementById('chartOuts'),{
+    type:'bar',
+    data:{labels:['0 outs','1 out','2 outs'],datasets:[{data:outsCounts,backgroundColor:'#007a38',borderRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:ctx=>`${ctx.parsed.y} grand slams`}}},
+      scales:{x:{ticks:{color:'#5a5a54',font:mfSm},grid:{display:false}},y:{ticks:{color:'#5a5a54',font:mfSm},grid:{color:'#e8e8e4'}}}}
+  });
+}
+
+// ── Render day log ─────────────────────────────────────────────────────
+function renderDayLog(){
+  document.getElementById('dayBody').innerHTML = Object.entries(viewData.days)
+    .sort((a,b)=>b[0].localeCompare(a[0]))
+    .map(([date,d])=>{
+      const hasGS=(d.grandSlams?.length||0)>0;
+      return `<tr style="${hasGS?'background:var(--accent-bg)':''}">
+        <td class="c-num">${date}</td>
+        <td class="c-num" style="color:var(--muted2)">${date.slice(0,4)}</td>
+        <td style="font-family:var(--ui);font-weight:700;font-size:15px;color:${hasGS?'var(--accent-dark)':'var(--muted2)'}">${d.grandSlams?.length||0}</td>
+        <td>${hasGS?d.grandSlams.map(g=>g.player?.split(',')[0]||'?').join(', '):'<span style="color:var(--muted2)">—</span>'}</td>
+        <td>${hasGS?d.grandSlams.map(g=>tLogo(g.team)+g.team).join(' '):''}</td>
+        <td class="c-num">${hasGS?d.grandSlams.map(g=>g.inning?(g.topbot==='Top'?'T':'B')+g.inning:'?').join(', '):'—'}</td>
+        <td class="c-num">${hasGS?d.grandSlams.map(g=>g.dist?g.dist+' ft':'?').join(', '):'—'}</td>
+        <td class="c-num">${d.allHRs||0}</td>
+      </tr>`;
+    }).join('');
+}
+
+// ── Sort ───────────────────────────────────────────────────────────────
+function sortLb(key){
+  if(sortKey===key)sortAsc=!sortAsc;else{sortKey=key;sortAsc=key==='name'||key==='team';}
+  document.querySelectorAll('#pane-leaderboard thead th').forEach(t=>{t.classList.remove('on','asc');if(t.getAttribute('onclick')===`sortLb('${key}')`){t.classList.add('on');if(sortAsc)t.classList.add('asc');}});
+  renderLeaderboard();
+}
+function sortTeam(key){
+  if(teamSortKey===key)teamSortAsc=!teamSortAsc;else{teamSortKey=key;teamSortAsc=key==='team';}
+  document.querySelectorAll('#pane-teams thead th').forEach(t=>{t.classList.remove('on','asc');if(t.getAttribute('onclick')===`sortTeam('${key}')`){t.classList.add('on');if(teamSortAsc)t.classList.add('asc');}});
+  renderTeams();
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────
+function switchTab(name){
+  const tabs=['leaderboard','teams','frequency','inning','daylog'];
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  tabs.forEach((n,i)=>{if(n===name){document.querySelectorAll('.tab')[i].classList.add('active');document.getElementById('pane-'+n).classList.add('active');}});
+  if(name==='teams')setTimeout(()=>{renderTeams();charts.teams?.resize?.();},50);
+  if(name==='frequency')setTimeout(()=>{renderFrequency();['perDay','byMonth','dist'].forEach(k=>charts[k]?.resize?.());},50);
+  if(name==='inning')setTimeout(()=>{renderInning();['byInning','topBot','byOuts'].forEach(k=>charts[k]?.resize?.());},50);
+}
+
+// ── Downloads ──────────────────────────────────────────────────────────
+function csvDL(fn,rows){const b=new Blob([rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();}
+function downloadLB(){const p=getPlayers();csvDL('grand-slam-leaderboard.csv',[['#','Player','Team','Grand slams','BL PA','GS/BL PA %','BL HR rate %','Total HRs'],...p.map((p,i)=>[i+1,p.name,p.team,p.grandSlams,p.blPA,p.gsPerBLPA,p.blHRRate,p.hrTotal])]);}
+function downloadTeams(){const t=getTeams();csvDL('grand-slam-teams.csv',[['#','Team','Grand slams','GS/game','BL PA','BL HR rate %','Total HRs','Games'],...t.map((t,i)=>[i+1,t.team,t.grandSlams,t.gsPerGame,t.blPA,t.blHRRate,t.hrTotal,t.games])]);}
+function downloadDayLog(){csvDL('grand-slam-daylog.csv',[['Date','Season','GS count','Players','Teams','Innings','Distances','Total HRs'],...Object.entries(viewData.days).sort((a,b)=>b[0].localeCompare(a[0])).map(([d,v])=>[d,d.slice(0,4),v.grandSlams?.length||0,v.grandSlams?.map(g=>g.player).join('; ')||'',v.grandSlams?.map(g=>g.team).join('; ')||'',v.grandSlams?.map(g=>g.inning||'').join('; ')||'',v.grandSlams?.map(g=>g.dist||'').join('; ')||'',v.allHRs||0])]);}
+
+// ── Init ───────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
