@@ -203,6 +203,7 @@
 <script>
 const TEAMS={
   ARI:{name:"Arizona Diamondbacks",  logo:"https://assets.actionnetwork.com/976480_dbacks.png",color:"#A71930"},
+  AZ: {name:"Arizona Diamondbacks",  logo:"https://assets.actionnetwork.com/976480_dbacks.png",color:"#A71930"},
   ATL:{name:"Atlanta Braves",         logo:"https://static.sprtactn.co/teamlogos/mlb/100/atl.png",color:"#CE1141"},
   BAL:{name:"Baltimore Orioles",      logo:"https://static.sprtactn.co/teamlogos/mlb/100/bal.png",color:"#DF4601"},
   BOS:{name:"Boston Red Sox",         logo:"https://static.sprtactn.co/teamlogos/mlb/100/bos.png",color:"#BD3039"},
@@ -324,20 +325,21 @@ function applyFilter(){
   for(const p of fullData.players){
     const pid = p.pid||p.name;
     if(!players[pid]) players[pid] = {pid, name:p.name, team:p.team, grandSlams:0, blHR:0, hrTotal:0, blPA:0};
-    // For "all seasons" use the combined totals directly
-    // For single season, we use what we rebuilt from days for GS, and scale BL PA proportionally
+    // For single season view, use full player data as-is
+    // (the JSON is already per-season when loaded from individual files,
+    // or combined totals when loaded from combined — either way don't zero out BL PA)
     if(season === 'all'){
       players[pid].blPA = p.blPA||0;
       players[pid].blHR = p.blHR||0;
       players[pid].hrTotal = p.hrTotal||0;
       players[pid].team = p.team||players[pid].team;
     } else {
-      // Single season: scale BL PA by GS ratio as a proxy
-      // (exact per-season BL PA would need per-season player records)
-      const gsRatio = (p.grandSlams||0) > 0 ? players[pid].grandSlams / p.grandSlams : 0;
-      players[pid].blPA = Math.round((p.blPA||0) * gsRatio);
-      players[pid].blHR = Math.round((p.blHR||0) * gsRatio);
-      players[pid].hrTotal = Math.round((p.hrTotal||0) * gsRatio);
+      // Single season: use original totals but cap at what makes sense
+      // We can't perfectly split multi-season combined data by season for BL PA,
+      // so use the full combined value as an approximation (slightly overcounts for multi-season)
+      players[pid].blPA = p.blPA||0;
+      players[pid].blHR = p.blHR||0;
+      players[pid].hrTotal = p.hrTotal||0;
       players[pid].team = p.team||players[pid].team;
     }
   }
@@ -361,16 +363,19 @@ function applyFilter(){
       teams[tm].blPA = t.blPA||0;
       teams[tm].blHR = t.blHR||0;
       teams[tm].hrTotal = t.hrTotal||0;
-      if(!teams[tm].games.size) for(let i=0;i<(t.games||0);i++) teams[tm].games.add(`game_${i}`);
+      if(!teams[tm].games||teams[tm].games===0) teams[tm].games = t.games||0;
     } else {
-      const gsRatio = (t.grandSlams||0) > 0 ? (teams[tm].grandSlams||0) / t.grandSlams : 0;
-      teams[tm].blPA = Math.round((t.blPA||0)*gsRatio);
-      teams[tm].blHR = Math.round((t.blHR||0)*gsRatio);
-      teams[tm].hrTotal = Math.round((t.hrTotal||0)*gsRatio);
+      // Use original totals — can't perfectly split by season from combined JSON
+      teams[tm].blPA = t.blPA||0;
+      teams[tm].blHR = t.blHR||0;
+      teams[tm].hrTotal = t.hrTotal||0;
+      if(!teams[tm].games||teams[tm].games===0) teams[tm].games = t.games||0;
     }
   }
-  // Finalize team games
-  for(const t of Object.values(teams)) t.games = t.games instanceof Set ? t.games.size : t.games;
+  // Finalize team games — convert Sets to counts where needed
+  for(const t of Object.values(teams)){
+    if(t.games instanceof Set) t.games = t.games.size;
+  }
 
   viewData = {
     players: Object.values(players).filter(p=>p.blPA>=minBLPA||p.grandSlams>0),
